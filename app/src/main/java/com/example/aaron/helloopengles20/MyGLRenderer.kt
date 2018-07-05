@@ -41,6 +41,7 @@ class MyGLRenderer : GLSurfaceView.Renderer {
   private val mProjectionMatrix = FloatArray(16)
   private val mViewMatrix = FloatArray(16)
   private val mRotationMatrix = FloatArray(16)
+  private val mTranslateMatrix = FloatArray(16)
 
   /**
    * Returns the rotation angle of the triangle shape (mTriangle).
@@ -63,6 +64,7 @@ class MyGLRenderer : GLSurfaceView.Renderer {
 
   override fun onDrawFrame(unused: GL10) {
     val scratch = FloatArray(16)
+    val scratch2 = FloatArray(16)
 
     // Draw background color
     GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT or GLES20.GL_DEPTH_BUFFER_BIT)
@@ -73,8 +75,24 @@ class MyGLRenderer : GLSurfaceView.Renderer {
     // Calculate the projection and view transformation
     Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0)
 
+
+    // Create a rotation for the triangle
+
+    // Use the following code to generate constant rotation.
+    // Leave this code out when using TouchEvents.
+    // long time = SystemClock.uptimeMillis() % 4000L;
+    // float angle = 0.090f * ((int) time);
+//    Matrix.translateM(mTranslateMatrix, 0, 1f, 1f, 1f)
+
+    Matrix.setRotateM(mTranslateMatrix, 0, angle, 0f, 0f, 1.0f)
+
+    // Combine the rotation matrix with the projection and camera view
+    // Note that the mMVPMatrix factor *must be first* in order
+    // for the matrix multiplication product to be correct.
+    Matrix.multiplyMM(scratch2, 0, mMVPMatrix, 0, mTranslateMatrix, 0)
+
     // Draw square
-    mSquare!!.draw(mMVPMatrix)
+    mSquare!!.draw(scratch2)
 
     // Create a rotation for the triangle
 
